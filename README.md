@@ -2,6 +2,8 @@
 
 A super-lightweight, offline spinning wheel application built as a single HTML file. Perfect for random selections, games, and decision-making!
 
+![Glücksrad Application Screenshot](Screenshot%202026-02-17%20222057.png)
+
 ## 📋 Project Overview
 
 **What started as a simple spinning wheel became an iterative masterpiece of web engineering!**
