@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glücksrad - Gewichtet</title>
+    <title>Lucky Wheel - Weighted</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3CclipPath id='wheel'%3E%3Ccircle cx='16' cy='16' r='14'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23wheel)'%3E%3Cpath d='M16 2A14 14 0 0 1 27.7 8.3L16 16z' fill='%23ff6b6b'/%3E%3Cpath d='M27.7 8.3A14 14 0 0 1 27.7 23.7L16 16z' fill='%234ecdc4'/%3E%3Cpath d='M27.7 23.7A14 14 0 0 1 16 30L16 16z' fill='%2345b7d1'/%3E%3Cpath d='M16 30A14 14 0 0 1 4.3 23.7L16 16z' fill='%2396ceb4'/%3E%3Cpath d='M4.3 23.7A14 14 0 0 1 4.3 8.3L16 16z' fill='%23feca57'/%3E%3Cpath d='M4.3 8.3A14 14 0 0 1 16 2L16 16z' fill='%23ff9ff3'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23000' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%232a2a2a' stroke='%23000' stroke-width='1'/%3E%3Cpolygon points='16,10 13,2 19,2' fill='%23ff6b6b' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E">
     <style>
         * {
@@ -486,34 +486,34 @@
 <body>
     <div class="container">
         <div class="left-panel">
-            <h1 id="pageTitle" contenteditable="true" spellcheck="false">⚖️ Glücksrad - Gewichtet</h1>
+            <h1 id="pageTitle" contenteditable="true" spellcheck="false">⚖️ Lucky Wheel - Weighted</h1>
             
             <div class="input-section">
-                <h3>Einträge (ein Eintrag pro Zeile, z.B. "Item 25%"):</h3>
-                <textarea id="itemsInput" placeholder="Gold 10%&#10;Silber 15%&#10;Bronze&#10;Nichts">Gold 10%
-Silber 15%
+                <h3>Entries (one entry per line, e.g. "Item 25%"):</h3>
+                <textarea id="itemsInput" placeholder="Gold 10%&#10;Silver 15%&#10;Bronze&#10;Nothing">Gold 10%
+Silver 15%
 Bronze
-Nichts</textarea>
+Nothing</textarea>
             </div>
 
             <div class="file-drop-zone" id="dropZone">
-                📁 TXT-Datei hier ablegen oder
-                <button onclick="document.getElementById('fileInput').click()">Datei öffnen</button>
+                📁 Drop TXT file here or
+                <button onclick="document.getElementById('fileInput').click()">Open file</button>
                 <input type="file" id="fileInput" accept=".txt">
             </div>
 
             <div class="controls">
-                <button onclick="shuffleItems()">🔀 Mischen</button>
+                <button onclick="shuffleItems()">🔀 Shuffle</button>
                 <button id="sortButton" onclick="toggleSort()">⬆️ A-Z</button>
-                <button onclick="saveToFile()">💾 Speichern</button>
-                <button onclick="clearHistory()">🗑️ Verlauf löschen</button>
+                <button onclick="saveToFile()">💾 Save</button>
+                <button onclick="clearHistory()">🗑️ Clear history</button>
             </div>
 
             <div class="duration-control">
-                <h4>Spin-Dauer:</h4>
+                <h4>Spin duration:</h4>
                 <div class="slider-container">
                     <input type="range" min="0.5" max="10" value="3" step="0.1" class="slider" id="durationSlider">
-                    <button onclick="randomizeDuration()" class="randomize-btn" title="Zufällige Dauer">🎲</button>
+                    <button onclick="randomizeDuration()" class="randomize-btn" title="Random duration">🎲</button>
                 </div>
                 <div class="duration-values">
                     <span class="start-label">0.5s</span>
@@ -523,9 +523,9 @@ Nichts</textarea>
             </div>
 
             <div class="history">
-                <h4>Verlauf:</h4>
+                <h4>History:</h4>
                 <div class="history-list" id="historyList">
-                    <div class="history-item">Bereit zum Drehen...</div>
+                    <div class="history-item">Ready to spin...</div>
                 </div>
             </div>
         </div>
@@ -533,7 +533,7 @@ Nichts</textarea>
         <div class="right-panel">
             <div class="winner-display" id="winnerDisplay">
                 <span class="winner-text" id="winnerText"></span>
-                <button class="delete-winner-btn" id="deleteWinnerBtn" onclick="deleteWinner()" title="Gewinner löschen">🗑️</button>
+                <button class="delete-winner-btn" id="deleteWinnerBtn" onclick="deleteWinner()" title="Remove winner">🗑️</button>
             </div>
             <div id="wheelContainer" onclick="spinWheel()">
                 <svg id="wheelSvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
@@ -546,7 +546,7 @@ Nichts</textarea>
                     <polygon points="200,30 190,10 210,10" fill="#ff6b6b" stroke="#000" stroke-width="2"/>
                 </svg>
             </div>
-            <button class="spin-button" id="spinButton">DREHEN!</button>
+            <button class="spin-button" id="spinButton">SPIN!</button>
         </div>
     </div>
 
@@ -613,7 +613,7 @@ Nichts</textarea>
             // Check for errors
             if (totalPercentage > 100) {
                 // Show error
-                showWeightError(`Fehler: Gewichtungen ergeben ${totalPercentage.toFixed(1)}% (max 100%)`);
+                showWeightError(`Error: weights total ${totalPercentage.toFixed(1)}% (max 100%)`);
                 return { segments: [], hasError: true };
             }
             
@@ -647,7 +647,7 @@ Nichts</textarea>
             } else if (remainingPercentage > 0) {
                 // Add empty segment for any remaining percentage
                 segments.push({
-                    name: '[Leer]',
+                    name: '[Empty]',
                     percentage: remainingPercentage,
                     isEmpty: true
                 });
@@ -732,7 +732,7 @@ Nichts</textarea>
                 emptyText.setAttribute('fill', '#fff');
                 emptyText.setAttribute('font-family', 'Courier New');
                 emptyText.setAttribute('font-size', '16');
-                emptyText.textContent = 'Keine Einträge';
+                emptyText.textContent = 'No entries';
                 wheelGroup.appendChild(emptyText);
                 return;
             }
@@ -789,7 +789,7 @@ Nichts</textarea>
                     
                     displayText = segment.name;
                     if (segment.isEmpty) {
-                        displayText = '[Leer]';
+                        displayText = '[Empty]';
                     } else if (currentTextLength > 25) {
                         displayText = segment.name.substring(0, 22) + '...';
                     }
@@ -841,7 +841,7 @@ Nichts</textarea>
                     
                     displayText = segment.name;
                     if (segment.isEmpty) {
-                        displayText = '[Leer]';
+                        displayText = '[Empty]';
                     } else if (segment.name.length > 25) {
                         displayText = segment.name.substring(0, 22) + '...';
                     }
@@ -993,7 +993,7 @@ Nichts</textarea>
 
         function showWinner(winner) {
             currentWinner = winner;
-            document.getElementById('winnerText').textContent = `🎉 Gewinner: ${winner}`;
+            document.getElementById('winnerText').textContent = `🎉 Winner: ${winner}`;
             
             // Check if this is an empty segment and hide/show delete button accordingly
             const winnerSegment = weightedSegments.find(segment => segment.name === winner);
@@ -1010,7 +1010,7 @@ Nichts</textarea>
             winnerDisplay.style.display = 'flex';
 
             // Add to history with percentage if it was a weighted item
-            const timestamp = new Date().toLocaleTimeString('de-DE');
+            const timestamp = new Date().toLocaleTimeString('en-US');
             let historyEntry = `${timestamp} - ${winner}`;
             
             if (winnerSegment && (winnerSegment.isWeighted || winnerSegment.isEmpty)) {
@@ -1053,7 +1053,7 @@ Nichts</textarea>
             currentWinner = null;
             
             // Add deletion note to history
-            const timestamp = new Date().toLocaleTimeString('de-DE');
+            const timestamp = new Date().toLocaleTimeString('en-US');
             const historyEntry = `${timestamp} - [GELÖSCHT] ${winnerToDelete}`;
             history.unshift(historyEntry);
             updateHistoryDisplay();
@@ -1062,7 +1062,7 @@ Nichts</textarea>
         function updateHistoryDisplay() {
             historyList.innerHTML = '';
             if (history.length === 0) {
-                historyList.innerHTML = '<div class="history-item">Bereit zum Drehen...</div>';
+                historyList.innerHTML = '<div class="history-item">Ready to spin...</div>';
                 userScrolledHistory = false;
             } else {
                 // Show all history entries (newest first since history.unshift puts them at start)
@@ -1101,13 +1101,13 @@ Nichts</textarea>
             const sortButton = document.getElementById('sortButton');
             
             if (sortAscending) {
-                lines.sort((a, b) => a.localeCompare(b, 'de'));
+                lines.sort((a, b) => a.localeCompare(b, 'en'));
                 sortButton.textContent = '⬇️ Z-A';
-                sortButton.title = 'Absteigend sortieren';
+                sortButton.title = 'Sort descending';
             } else {
-                lines.sort((a, b) => b.localeCompare(a, 'de'));
+                lines.sort((a, b) => b.localeCompare(a, 'en'));
                 sortButton.textContent = '⬆️ A-Z';
-                sortButton.title = 'Aufsteigend sortieren';
+                sortButton.title = 'Sort ascending';
             }
             
             sortAscending = !sortAscending;
@@ -1127,7 +1127,7 @@ Nichts</textarea>
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'gluecksrad_eintraege.txt';
+            a.download = 'lucky_wheel_entries.txt';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1215,9 +1215,9 @@ Nichts</textarea>
         let isEditingTitle = false;
         
         function updateTitle() {
-            const newTitle = pageTitle.textContent.trim() || '⚖️ Glücksrad - Gewichtet';
+            const newTitle = pageTitle.textContent.trim() || '⚖️ Lucky Wheel - Weighted';
             // Remove emojis from tab title while keeping them in the visible h1
-            const tabTitle = newTitle.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim() || 'Glücksrad - Gewichtet';
+            const tabTitle = newTitle.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim() || 'Lucky Wheel - Weighted';
             document.title = tabTitle;
         }
         
@@ -1240,7 +1240,7 @@ Nichts</textarea>
             isEditingTitle = false;
             updateTitle();
             if (pageTitle.textContent.trim() === '') {
-                pageTitle.textContent = '⚖️ Glücksrad - Gewichtet';
+                pageTitle.textContent = '⚖️ Lucky Wheel - Weighted';
                 updateTitle();
             }
         });

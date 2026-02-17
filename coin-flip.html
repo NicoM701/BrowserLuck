@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="de" spellcheck="false">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Flip: Heads or Tails</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23feca57' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M9 16a7 7 0 0 1 14 0' fill='none' stroke='%23000' stroke-width='2'/%3E%3Ccircle cx='13' cy='14' r='1.4' fill='%23000'/%3E%3Ccircle cx='19' cy='14' r='1.4' fill='%23000'/%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #2a2a2a;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            min-width: 800px;
+            min-height: 600px;
+        }
+
+        .left-panel {
+            width: 40%;
+            background: #1e1e1e;
+            border-right: 2px solid #444;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 18px;
+        }
+
+        .right-panel {
+            width: 60%;
+            background: #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 24px;
+            text-shadow: 2px 2px 0 #000;
+            cursor: text;
+            border: 2px solid transparent;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        h1:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .section {
+            background: #282828;
+            border: 2px solid #444;
+            padding: 12px;
+        }
+
+        .section h3 {
+            color: #4ecdc4;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        #labelsInput {
+            width: 100%;
+            height: 76px;
+            background: #333;
+            color: #fff;
+            border: 2px solid #555;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+            line-height: 1.2;
+        }
+
+        #labelsInput:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        button {
+            background: #4ecdc4;
+            color: #1e1e1e;
+            border: 2px solid #4ecdc4;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: #1e1e1e;
+            color: #4ecdc4;
+        }
+
+        button:active {
+            transform: translate(1px, 1px);
+        }
+
+        .history-list {
+            background: #333;
+            border: 2px solid #555;
+            padding: 10px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .history-item {
+            margin-bottom: 5px;
+            padding: 2px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .winner-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #000;
+            display: none;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .coin-stage {
+            width: 480px;
+            height: 480px;
+            position: relative;
+            perspective: 1300px;
+            border: 4px solid #444;
+            background: radial-gradient(circle, #3a3a3a 0%, #252525 70%);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .coin-wrapper {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transform-style: preserve-3d;
+            z-index: 2;
+            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.35));
+        }
+
+        .coin {
+            width: 270px;
+            height: 270px;
+            position: relative;
+            transform-style: preserve-3d;
+            border-radius: 50%;
+            will-change: transform;
+        }
+
+        .coin::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.18) 0px,
+                rgba(255, 255, 255, 0.18) 2px,
+                rgba(0, 0, 0, 0.08) 2px,
+                rgba(0, 0, 0, 0.08) 4px
+            );
+            transform: translateZ(-3px);
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .coin-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform-style: preserve-3d;
+            box-shadow:
+                inset 0 0 0 4px rgba(255, 255, 255, 0.08),
+                inset 0 0 0 12px rgba(0, 0, 0, 0.12),
+                inset 0 22px 28px rgba(255, 255, 255, 0.18),
+                inset 0 -26px 30px rgba(0, 0, 0, 0.18);
+            overflow: hidden;
+        }
+
+        .coin-heads {
+            transform: rotateY(0deg) translateZ(1px);
+            background:
+                radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 40%),
+                conic-gradient(from 10deg, #ffd873, #f0bf4f, #e4ad35, #f7cc65, #ffd873),
+                radial-gradient(circle at 30% 30%, #ffe6a0, #feca57 60%, #d39e2e);
+            color: #2a2a2a;
+            text-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.35),
+                0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .coin-tails {
+            transform: rotateY(180deg) translateZ(1px);
+            background:
+                radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 42%),
+                conic-gradient(from 10deg, #f1f3f5, #d7dde3, #bdc7d0, #e2e7ec, #f1f3f5),
+                radial-gradient(circle at 30% 30%, #ffffff, #d6dde4 65%, #96a4b2);
+            color: #253241;
+            text-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.3),
+                0 -1px 0 rgba(0, 0, 0, 0.22);
+        }
+
+        .coin-face::before {
+            content: '';
+            position: absolute;
+            inset: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.18);
+            box-shadow:
+                0 0 0 2px rgba(255, 255, 255, 0.2),
+                inset 0 8px 10px rgba(255, 255, 255, 0.15),
+                inset 0 -8px 10px rgba(0, 0, 0, 0.12);
+            pointer-events: none;
+        }
+
+        .coin-face::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 22% 20%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 30%),
+                radial-gradient(circle at 78% 82%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 38%);
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+        }
+
+        .coin-heads::before {
+            border-color: rgba(135, 96, 12, 0.35);
+            box-shadow:
+                0 0 0 2px rgba(255, 236, 170, 0.28),
+                inset 0 8px 10px rgba(255, 255, 255, 0.18),
+                inset 0 -8px 10px rgba(136, 91, 0, 0.12);
+        }
+
+        .coin-tails::before {
+            border: 2px dashed rgba(58, 73, 89, 0.45);
+            box-shadow:
+                0 0 0 2px rgba(255, 255, 255, 0.2),
+                inset 0 8px 10px rgba(255, 255, 255, 0.14),
+                inset 0 -8px 10px rgba(71, 85, 99, 0.14);
+        }
+
+        .coin-shadow {
+            position: absolute;
+            left: 50%;
+            bottom: 85px;
+            width: 190px;
+            height: 34px;
+            background: rgba(0, 0, 0, 0.35);
+            transform: translateX(-50%);
+            border-radius: 999px;
+            filter: blur(4px);
+            z-index: 1;
+        }
+
+        .flip-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: #fff;
+            font-size: 18px;
+            padding: 15px 30px;
+            border: 3px solid #000;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .flip-button:hover {
+            background: #fff;
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .container {
+                flex-direction: column;
+                min-height: 100vh;
+                height: auto;
+            }
+
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+
+            .left-panel {
+                padding: 12px;
+            }
+
+            .right-panel {
+                padding: 16px;
+                background: transparent;
+            }
+
+            .coin-stage {
+                width: min(90vw, 520px);
+                height: min(90vw, 520px);
+                border: none;
+                background: transparent;
+            }
+
+            .coin {
+                width: min(56vw, 280px);
+                height: min(56vw, 280px);
+            }
+
+            .coin-shadow {
+                bottom: 18%;
+            }
+
+            .flip-button {
+                position: static;
+                transform: none;
+                margin-top: 20px;
+                margin-bottom: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h1 id="pageTitle" contenteditable="true" spellcheck="false">Coin Flip: Heads or Tails</h1>
+
+            <div class="section">
+                <h3>Side labels</h3>
+                <textarea id="labelsInput" placeholder="Heads&#10;Tails">Heads
+Tails</textarea>
+            </div>
+
+            <div class="controls">
+                <button onclick="swapLabels()">↕️ Swap</button>
+                <button onclick="clearHistory()">🗑️ Clear history</button>
+            </div>
+
+            <div class="section">
+                <h3>History</h3>
+                <div class="history-list" id="historyList">
+                    <div class="history-item">Ready for first flip...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="winner-display" id="winnerDisplay"></div>
+
+            <div class="coin-stage" id="coinStage" title="Click to flip">
+                <div class="coin-wrapper" id="coinWrapper">
+                    <div class="coin" id="coin">
+                        <div class="coin-face coin-heads" id="headsLabel">Heads</div>
+                        <div class="coin-face coin-tails" id="tailsLabel">Tails</div>
+                    </div>
+                </div>
+                <div class="coin-shadow"></div>
+            </div>
+
+            <button class="flip-button" id="flipButton">FLIP!</button>
+        </div>
+    </div>
+
+    <script>
+        let isFlipping = false;
+        let history = [];
+        let userScrolledHistory = false;
+        let isEditingTitle = false;
+        let currentYRotation = 0;
+        let animationFrameId = null;
+
+        const FLIP_DURATION_MS = 2000;
+        const coin = document.getElementById('coin');
+        const coinStage = document.getElementById('coinStage');
+        const coinWrapper = document.getElementById('coinWrapper');
+        const coinShadow = document.querySelector('.coin-shadow');
+        const flipButton = document.getElementById('flipButton');
+        const historyList = document.getElementById('historyList');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+        const pageTitle = document.getElementById('pageTitle');
+        const labelsInput = document.getElementById('labelsInput');
+        const headsLabel = document.getElementById('headsLabel');
+        const tailsLabel = document.getElementById('tailsLabel');
+
+        function normalizeLabel(value, fallback) {
+            const trimmed = value.trim();
+            return trimmed === '' ? fallback : trimmed;
+        }
+
+        function enforceTwoLinesAndUpdateLabels() {
+            const lines = labelsInput.value.replace(/\r/g, '').split('\n');
+            if (lines.length > 2) {
+                labelsInput.value = lines.slice(0, 2).join('\n');
+            }
+
+            const safeLines = labelsInput.value.replace(/\r/g, '').split('\n');
+            const first = normalizeLabel(safeLines[0] || '', 'Heads');
+            const second = normalizeLabel(safeLines[1] || '', 'Tails');
+            headsLabel.textContent = first;
+            tailsLabel.textContent = second;
+        }
+
+        function getActiveLabels() {
+            return {
+                heads: normalizeLabel(headsLabel.textContent, 'Heads'),
+                tails: normalizeLabel(tailsLabel.textContent, 'Tails')
+            };
+        }
+
+        function swapLabels() {
+            const lines = labelsInput.value.replace(/\r/g, '').split('\n');
+            const first = lines[0] || '';
+            const second = lines[1] || '';
+            labelsInput.value = second + '\n' + first;
+            enforceTwoLinesAndUpdateLabels();
+        }
+
+        function updateTitle() {
+            const newTitle = pageTitle.textContent.trim() || 'Coin Flip: Heads or Tails';
+            document.title = newTitle;
+        }
+
+        function updateHistoryDisplay() {
+            historyList.innerHTML = '';
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-item">Ready for first flip...</div>';
+                userScrolledHistory = false;
+                return;
+            }
+
+            history.forEach((entry) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.textContent = entry;
+                historyList.appendChild(div);
+            });
+
+            if (!userScrolledHistory) {
+                historyList.scrollTop = 0;
+            }
+        }
+
+        function showWinner(result) {
+            winnerDisplay.textContent = 'Result: ' + result;
+            winnerDisplay.style.display = 'block';
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function animateFlip(startRotation, endRotation, duration, resultText) {
+            const startTime = performance.now();
+            const rotationDelta = endRotation - startRotation;
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeOutCubic(progress);
+                const currentRotation = startRotation + rotationDelta * eased;
+
+                const arc = Math.sin(progress * Math.PI);
+                const liftPx = arc * 90;
+                const squash = 1 - arc * 0.06;
+                const tilt = arc * 15;
+
+                coinWrapper.style.transform = 'translate(-50%, calc(-50% - ' + liftPx.toFixed(2) + 'px)) scale(' + squash.toFixed(4) + ')';
+                coin.style.transform = 'rotateX(' + tilt.toFixed(2) + 'deg) rotateY(' + currentRotation.toFixed(2) + 'deg)';
+                coinShadow.style.transform = 'translateX(-50%) scale(' + (1 - arc * 0.35).toFixed(4) + ')';
+                coinShadow.style.opacity = (0.35 - arc * 0.15).toFixed(3);
+
+                if (progress < 1) {
+                    animationFrameId = requestAnimationFrame(step);
+                    return;
+                }
+
+                currentYRotation = endRotation;
+                coinWrapper.style.transform = 'translate(-50%, -50%) scale(1)';
+                coin.style.transform = 'rotateX(0deg) rotateY(' + currentYRotation + 'deg)';
+                coinShadow.style.transform = 'translateX(-50%) scale(1)';
+                coinShadow.style.opacity = '0.35';
+
+                showWinner(resultText);
+                const timestamp = new Date().toLocaleTimeString('en-US');
+                history.unshift(timestamp + ' - ' + resultText);
+                updateHistoryDisplay();
+                isFlipping = false;
+                animationFrameId = null;
+            }
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            animationFrameId = requestAnimationFrame(step);
+        }
+
+        function flipCoin() {
+            if (isFlipping) {
+                return;
+            }
+
+            isFlipping = true;
+            winnerDisplay.style.display = 'none';
+
+            const labels = getActiveLabels();
+            const landsOnHeads = Math.random() < 0.5;
+            const resultText = landsOnHeads ? labels.heads : labels.tails;
+
+            const desiredParity = landsOnHeads ? 0 : 1;
+            const currentParity = ((Math.round(currentYRotation / 180) % 2) + 2) % 2;
+            const baseHalfTurns = 14 + Math.floor(Math.random() * 5);
+            const parityAfterBase = (currentParity + baseHalfTurns) % 2;
+            const parityAdjustment = (desiredParity - parityAfterBase + 2) % 2;
+            const totalHalfTurns = baseHalfTurns + parityAdjustment;
+            const endRotation = currentYRotation + totalHalfTurns * 180;
+
+            animateFlip(currentYRotation, endRotation, FLIP_DURATION_MS, resultText);
+        }
+
+        function clearHistory() {
+            history = [];
+            updateHistoryDisplay();
+        }
+
+        function handleFlipButtonPress(e) {
+            e.preventDefault();
+            flipCoin();
+        }
+
+        coinStage.addEventListener('click', flipCoin);
+        flipButton.addEventListener('pointerdown', handleFlipButtonPress);
+        flipButton.addEventListener('click', handleFlipButtonPress);
+        labelsInput.addEventListener('input', enforceTwoLinesAndUpdateLabels);
+
+        historyList.addEventListener('scroll', function() {
+            userScrolledHistory = historyList.scrollTop > 5;
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (isEditingTitle) {
+                return;
+            }
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flipCoin();
+            }
+        });
+
+        pageTitle.addEventListener('input', updateTitle);
+        pageTitle.addEventListener('focus', function() {
+            isEditingTitle = true;
+        });
+        pageTitle.addEventListener('blur', function() {
+            isEditingTitle = false;
+            if (pageTitle.textContent.trim() === '') {
+                pageTitle.textContent = 'Coin Flip: Heads or Tails';
+            }
+            updateTitle();
+        });
+        pageTitle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                pageTitle.blur();
+            }
+            e.stopPropagation();
+        });
+
+        enforceTwoLinesAndUpdateLabels();
+        updateTitle();
+    </script>
+</body>
+</html>
