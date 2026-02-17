@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glücksrad - Gewichtet</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3CclipPath id='wheel'%3E%3Ccircle cx='16' cy='16' r='14'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23wheel)'%3E%3Cpath d='M16 2A14 14 0 0 1 27.7 8.3L16 16z' fill='%23ff6b6b'/%3E%3Cpath d='M27.7 8.3A14 14 0 0 1 27.7 23.7L16 16z' fill='%234ecdc4'/%3E%3Cpath d='M27.7 23.7A14 14 0 0 1 16 30L16 16z' fill='%2345b7d1'/%3E%3Cpath d='M16 30A14 14 0 0 1 4.3 23.7L16 16z' fill='%2396ceb4'/%3E%3Cpath d='M4.3 23.7A14 14 0 0 1 4.3 8.3L16 16z' fill='%23feca57'/%3E%3Cpath d='M4.3 8.3A14 14 0 0 1 16 2L16 16z' fill='%23ff9ff3'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23000' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%232a2a2a' stroke='%23000' stroke-width='1'/%3E%3Cpolygon points='16,10 13,2 19,2' fill='%23ff6b6b' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #2a2a2a;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            min-width: 800px;
+            min-height: 600px;
+        }
+
+        .left-panel {
+            width: 40%;
+            background: #1e1e1e;
+            border-right: 2px solid #444;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .right-panel {
+            width: 60%;
+            background: #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-section h3 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #itemsInput {
+            width: 100%;
+            height: 200px;
+            background: #333;
+            color: #fff;
+            border: 2px solid #555;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        #itemsInput:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #4ecdc4;
+            color: #1e1e1e;
+            border: none;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #4ecdc4;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: #1e1e1e;
+            color: #4ecdc4;
+        }
+
+        button:active {
+            transform: translate(1px, 1px);
+        }
+
+        .duration-control {
+            margin-bottom: 30px;
+        }
+
+        .duration-control h4 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 20px;
+            background: #333;
+            border: 2px solid #555;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .randomize-btn {
+            background: #4ecdc4;
+            color: #1e1e1e;
+            border: none;
+            padding: 8px 10px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #4ecdc4;
+            transition: all 0.1s;
+            font-size: 14px;
+            min-width: 40px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .randomize-btn:hover {
+            background: #1e1e1e;
+            color: #4ecdc4;
+        }
+
+        .randomize-btn:active {
+            transform: translate(1px, 1px);
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4ecdc4;
+            cursor: pointer;
+            border: 2px solid #1e1e1e;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4ecdc4;
+            cursor: pointer;
+            border: 2px solid #1e1e1e;
+        }
+
+        .duration-values {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+            position: relative;
+            display: flex;
+            width: calc(100% - 50px); /* Account for dice button width */
+        }
+
+        .duration-values .start-label {
+            position: absolute;
+            left: 0;
+        }
+
+        .duration-values .current-label {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .duration-values .end-label {
+            position: absolute;
+            right: 0;
+        }
+
+        .file-drop-zone {
+            border: 2px dashed #555;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #aaa;
+            transition: all 0.3s;
+        }
+
+        .file-drop-zone.dragover {
+            border-color: #4ecdc4;
+            background: #333;
+        }
+
+        #wheelContainer {
+            width: 750px;
+            height: 750px;
+            max-width: 90vw;
+            max-height: 90vh;
+            border: 4px solid #444;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 1/1; /* Keep it square */
+        }
+
+        #wheelSvg {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.1s ease-out;
+        }
+
+        .history {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .history h4 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .history-list {
+            background: #333;
+            border: 2px solid #555;
+            padding: 10px;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .history-item {
+            margin-bottom: 5px;
+            padding: 2px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .winner-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #000;
+            display: none;
+            z-index: 10;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .winner-text {
+            flex: 1;
+        }
+
+        .delete-winner-btn {
+            background: #fff;
+            color: #ff6b6b;
+            border: 2px solid #fff;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 3px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+        }
+
+        .delete-winner-btn:hover {
+            background: #ffebeb;
+            transform: scale(1.1);
+        }
+
+        .delete-winner-btn:active {
+            transform: scale(0.95);
+        }
+
+        .spin-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: #fff;
+            font-size: 18px;
+            padding: 15px 30px;
+            border: 3px solid #000;
+        }
+
+        .spin-button:hover {
+            background: #fff;
+            color: #ff6b6b;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        @media (max-width: 1400px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            .container {
+                flex-direction: column;
+                min-height: 100vh;
+                height: auto;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+            
+            .left-panel {
+                flex: 0 0 auto;
+                padding: 15px;
+            }
+            
+            .right-panel {
+                flex: 0 0 auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                background: transparent;
+            }
+            
+            #wheelContainer {
+                width: min(70vw, 70vw);
+                height: min(70vw, 70vw);
+                max-width: 500px;
+                max-height: 500px;
+                flex-shrink: 0;
+                border: none;
+                background: transparent;
+            }
+            
+            .spin-button {
+                position: static;
+                margin-top: 20px;
+                transform: none;
+                flex-shrink: 0;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .left-panel {
+                padding: 10px;
+            }
+            
+            .right-panel {
+                padding: 15px;
+            }
+            
+            #wheelContainer {
+                width: min(80vw, 80vw);
+                height: min(80vw, 80vw);
+                max-width: 400px;
+                max-height: 400px;
+                border: none;
+                background: transparent;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .history-list {
+                height: 60px;
+            }
+            
+            .spin-button {
+                font-size: 16px;
+                padding: 12px 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .left-panel {
+                padding: 8px;
+            }
+            
+            .right-panel {
+                padding: 10px;
+                background: transparent;
+            }
+            
+            #wheelContainer {
+                width: min(85vw, 85vw);
+                height: min(85vw, 85vw);
+                max-width: 350px;
+                max-height: 350px;
+                border: none;
+                background: transparent;
+            }
+            
+            h1 {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .input-section h3,
+            .duration-control h4,
+            .history h4 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            
+            #itemsInput {
+                height: 80px;
+                font-size: 11px;
+            }
+            
+            .controls button {
+                padding: 4px 6px;
+                font-size: 10px;
+            }
+            
+            .spin-button {
+                font-size: 14px;
+                padding: 10px 20px;
+                margin-top: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .history-list {
+                height: 40px;
+                font-size: 10px;
+            }
+            
+            .file-drop-zone {
+                padding: 10px;
+                font-size: 11px;
+            }
+            
+            .duration-control {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h1 id="pageTitle" contenteditable="true" spellcheck="false">⚖️ Glücksrad - Gewichtet</h1>
+            
+            <div class="input-section">
+                <h3>Einträge (ein Eintrag pro Zeile, z.B. "Item 25%"):</h3>
+                <textarea id="itemsInput" placeholder="Gold 10%&#10;Silber 15%&#10;Bronze&#10;Nichts">Gold 10%
+Silber 15%
+Bronze
+Nichts</textarea>
+            </div>
+
+            <div class="file-drop-zone" id="dropZone">
+                📁 TXT-Datei hier ablegen oder
+                <button onclick="document.getElementById('fileInput').click()">Datei öffnen</button>
+                <input type="file" id="fileInput" accept=".txt">
+            </div>
+
+            <div class="controls">
+                <button onclick="shuffleItems()">🔀 Mischen</button>
+                <button id="sortButton" onclick="toggleSort()">⬆️ A-Z</button>
+                <button onclick="saveToFile()">💾 Speichern</button>
+                <button onclick="clearHistory()">🗑️ Verlauf löschen</button>
+            </div>
+
+            <div class="duration-control">
+                <h4>Spin-Dauer:</h4>
+                <div class="slider-container">
+                    <input type="range" min="0.5" max="10" value="3" step="0.1" class="slider" id="durationSlider">
+                    <button onclick="randomizeDuration()" class="randomize-btn" title="Zufällige Dauer">🎲</button>
+                </div>
+                <div class="duration-values">
+                    <span class="start-label">0.5s</span>
+                    <span id="currentDuration" class="current-label">3.0s</span>
+                    <span class="end-label">10s</span>
+                </div>
+            </div>
+
+            <div class="history">
+                <h4>Verlauf:</h4>
+                <div class="history-list" id="historyList">
+                    <div class="history-item">Bereit zum Drehen...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="winner-display" id="winnerDisplay">
+                <span class="winner-text" id="winnerText"></span>
+                <button class="delete-winner-btn" id="deleteWinnerBtn" onclick="deleteWinner()" title="Gewinner löschen">🗑️</button>
+            </div>
+            <div id="wheelContainer" onclick="spinWheel()">
+                <svg id="wheelSvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <g id="wheelGroup">
+                        <!-- Segments will be inserted here -->
+                    </g>
+                    <!-- Center circle -->
+                    <circle cx="200" cy="200" r="15" fill="#2a2a2a" stroke="#000" stroke-width="2"/>
+                    <!-- Pointer (pointing inward from top) -->
+                    <polygon points="200,30 190,10 210,10" fill="#ff6b6b" stroke="#000" stroke-width="2"/>
+                </svg>
+            </div>
+            <button class="spin-button" onclick="spinWheel()">DREHEN!</button>
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+        let weightedSegments = []; // Will store segments with calculated weights
+        let isSpinning = false;
+        let currentRotation = 0;
+        let animationId = null;
+        let history = [];
+        let sortAscending = true;
+        let userScrolledHistory = false;
+        let currentWinner = null;
+
+        const wheelSvg = document.getElementById('wheelSvg');
+        const wheelGroup = document.getElementById('wheelGroup');
+        const durationSlider = document.getElementById('durationSlider');
+        const currentDurationSpan = document.getElementById('currentDuration');
+        const itemsInput = document.getElementById('itemsInput');
+        const historyList = document.getElementById('historyList');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        // Color palette for segments
+        const colors = [
+            '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', 
+            '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd',
+            '#00d2d3', '#ff9f43', '#ee5a24', '#0984e3'
+        ];
+
+        function parseWeightedItems() {
+            const text = itemsInput.value.trim();
+            const rawItems = text ? text.split('\n').filter(item => item.trim() !== '') : [];
+            
+            const parsedItems = [];
+            const weightedItems = [];
+            const unweightedItems = [];
+            let totalPercentage = 0;
+            let hasError = false;
+            
+            // Parse each item for percentage (supports 25%, 0.25%, 0,25%, .5%, ,2% formats)
+            rawItems.forEach(item => {
+                const percentMatch = item.match(/(.+?)\s*(\d+(?:[.,]\d+)?|[.,]\d+)%\s*$/);
+                if (percentMatch) {
+                    const name = percentMatch[1].trim();
+                    // Convert German decimal format (comma) to standard format (dot) and handle leading decimal
+                    let percentString = percentMatch[2].replace(',', '.');
+                    // Add leading zero if number starts with decimal point
+                    if (percentString.startsWith('.')) {
+                        percentString = '0' + percentString;
+                    }
+                    const percentage = parseFloat(percentString);
+                    if (percentage > 0 && percentage <= 100) {
+                        weightedItems.push({ name, percentage });
+                        totalPercentage += percentage;
+                    }
+                } else {
+                    unweightedItems.push(item.trim());
+                }
+            });
+            
+            // Check for errors
+            if (totalPercentage > 100) {
+                // Show error
+                showWeightError(`Fehler: Gewichtungen ergeben ${totalPercentage.toFixed(1)}% (max 100%)`);
+                return { segments: [], hasError: true };
+            }
+            
+            // Clear any previous error
+            hideWeightError();
+            
+            // Calculate segments
+            const segments = [];
+            
+            // Add weighted items
+            weightedItems.forEach(item => {
+                segments.push({
+                    name: item.name,
+                    percentage: item.percentage,
+                    isWeighted: true
+                });
+            });
+            
+            // Calculate remaining percentage for unweighted items
+            const remainingPercentage = 100 - totalPercentage;
+            
+            if (unweightedItems.length > 0 && remainingPercentage > 0) {
+                const equalPercentage = remainingPercentage / unweightedItems.length;
+                unweightedItems.forEach(item => {
+                    segments.push({
+                        name: item,
+                        percentage: equalPercentage,
+                        isWeighted: false
+                    });
+                });
+            } else if (remainingPercentage > 0 && weightedItems.length > 0) {
+                // Only add empty segment if we actually have weighted items
+                // Otherwise, distribute remaining percentage among existing segments
+                if (segments.length > 0) {
+                    const bonusPercentage = remainingPercentage / segments.length;
+                    segments.forEach(segment => {
+                        segment.percentage += bonusPercentage;
+                    });
+                } else {
+                    // Fallback: add empty segment
+                    segments.push({
+                        name: '[Leer]',
+                        percentage: remainingPercentage,
+                        isEmpty: true
+                    });
+                }
+            }
+            
+            return { segments, hasError: false };
+        }
+
+        function showWeightError(message) {
+            let errorDiv = document.getElementById('weightError');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'weightError';
+                errorDiv.style.cssText = `
+                    background: #ff4444;
+                    color: white;
+                    padding: 8px;
+                    margin: 10px 0;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: bold;
+                `;
+                document.querySelector('.input-section').appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideWeightError() {
+            const errorDiv = document.getElementById('weightError');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        function updateItems() {
+            const result = parseWeightedItems();
+            if (result.hasError) {
+                weightedSegments = [];
+                return;
+            }
+            
+            weightedSegments = result.segments;
+            items = weightedSegments.map(segment => segment.name); // For compatibility
+            drawWheel();
+        }
+
+        function createSegmentPath(centerX, centerY, radius, startAngle, endAngle) {
+            const x1 = centerX + radius * Math.cos(startAngle);
+            const y1 = centerY + radius * Math.sin(startAngle);
+            const x2 = centerX + radius * Math.cos(endAngle);
+            const y2 = centerY + radius * Math.sin(endAngle);
+            
+            const largeArcFlag = (endAngle - startAngle) > Math.PI ? 1 : 0;
+            
+            return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+        }
+
+        function drawWheel() {
+            const centerX = 200;
+            const centerY = 200;
+            const radius = 180;
+
+            // Clear existing segments
+            wheelGroup.innerHTML = '';
+
+            if (weightedSegments.length === 0) {
+                // Draw empty wheel
+                const emptyCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                emptyCircle.setAttribute('cx', centerX);
+                emptyCircle.setAttribute('cy', centerY);
+                emptyCircle.setAttribute('r', radius);
+                emptyCircle.setAttribute('fill', '#333');
+                emptyCircle.setAttribute('stroke', '#555');
+                emptyCircle.setAttribute('stroke-width', '2');
+                wheelGroup.appendChild(emptyCircle);
+
+                const emptyText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                emptyText.setAttribute('x', centerX);
+                emptyText.setAttribute('y', centerY);
+                emptyText.setAttribute('text-anchor', 'middle');
+                emptyText.setAttribute('dominant-baseline', 'middle');
+                emptyText.setAttribute('fill', '#fff');
+                emptyText.setAttribute('font-family', 'Courier New');
+                emptyText.setAttribute('font-size', '16');
+                emptyText.textContent = 'Keine Einträge';
+                wheelGroup.appendChild(emptyText);
+                return;
+            }
+
+            // Draw weighted segments
+            let currentAngle = 0;
+            
+            for (let i = 0; i < weightedSegments.length; i++) {
+                const segment = weightedSegments[i];
+                const segmentAngle = (segment.percentage / 100) * (2 * Math.PI);
+                const startAngle = currentAngle;
+                const endAngle = currentAngle + segmentAngle;
+
+                // Create segment path
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', createSegmentPath(centerX, centerY, radius, startAngle, endAngle));
+                
+                // Different colors for different segment types
+                let segmentColor;
+                if (segment.isEmpty) {
+                    segmentColor = '#666'; // Gray for empty segments
+                } else {
+                    segmentColor = colors[i % colors.length]; // Normal colors for all items
+                }
+                
+                path.setAttribute('fill', segmentColor);
+                path.setAttribute('stroke', '#000');
+                path.setAttribute('stroke-width', '2');
+                wheelGroup.appendChild(path);
+
+                // Add text - position closer to center to use empty space
+                const textAngle = startAngle + segmentAngle / 2;
+                const textRadius = radius * 0.55;
+                const textX = centerX + Math.cos(textAngle) * textRadius;
+                const textY = centerY + Math.sin(textAngle) * textRadius;
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', textX);
+                text.setAttribute('y', textY);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('fill', '#000');
+                text.setAttribute('font-family', 'Courier New');
+                text.setAttribute('font-weight', 'bold');
+                
+                // Determine if we need vertical text based on number of segments and segment size
+                const useVerticalText = weightedSegments.length > 8 || segmentAngle < (Math.PI / 6);
+                let fontSize, displayText;
+                
+                if (useVerticalText) {
+                    // Calculate available space
+                    const currentTextLength = segment.name.length;
+                    const availableHeight = radius * 0.70;
+                    
+                    displayText = segment.name;
+                    if (segment.isEmpty) {
+                        displayText = '[Leer]';
+                    } else if (currentTextLength > 25) {
+                        displayText = segment.name.substring(0, 22) + '...';
+                    }
+                    
+                    // Start with a safe calculation and adjust
+                    let baseFontSize = availableHeight / displayText.length;
+                    
+                    // Aggressive letter spacing to fit text properly
+                    let letterSpacing = 0;
+                    if (displayText.length > 6) {
+                        letterSpacing = Math.max(-1.5, -0.15 * displayText.length);
+                        baseFontSize = baseFontSize * 1.4;
+                    }
+                    
+                    fontSize = Math.max(5, Math.min(15, baseFontSize * 1.25));
+                    
+                    // Create vertical text with proper spacing
+                    text.setAttribute('font-size', fontSize);
+                    text.setAttribute('letter-spacing', `${letterSpacing}px`);
+                    
+                    const chars = displayText.split('');
+                    const effectiveLineHeight = fontSize * (0.85 + Math.max(0, letterSpacing * 0.05));
+                    const totalHeight = chars.length * effectiveLineHeight;
+                    
+                    // Ensure text fits within segment
+                    if (totalHeight > availableHeight) {
+                        const scaleFactor = availableHeight / totalHeight;
+                        fontSize = fontSize * scaleFactor;
+                        text.setAttribute('font-size', fontSize);
+                    }
+                    
+                    const finalLineHeight = fontSize * (0.85 + Math.max(0, letterSpacing * 0.05));
+                    text.setAttribute('y', textY - (chars.length * finalLineHeight) / 2 + finalLineHeight / 2);
+                    
+                    // Rotate the vertical text to align with the segment's radial direction
+                    const rotationAngle = (textAngle * 180 / Math.PI) + 90;
+                    text.setAttribute('transform', `rotate(${rotationAngle} ${textX} ${textY})`);
+                    
+                    chars.forEach((char, charIndex) => {
+                        const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                        tspan.setAttribute('x', textX);
+                        tspan.setAttribute('dy', charIndex === 0 ? 0 : finalLineHeight);
+                        tspan.textContent = char;
+                        text.appendChild(tspan);
+                    });
+                } else {
+                    // Use horizontal text with rotation for fewer items
+                    const maxSegmentWidth = radius * segmentAngle * 0.85; // Safe segment width based on actual segment size
+                    
+                    displayText = segment.name;
+                    if (segment.isEmpty) {
+                        displayText = '[Leer]';
+                    } else if (segment.name.length > 25) {
+                        displayText = segment.name.substring(0, 22) + '...';
+                    }
+                    
+                    const finalTextLength = displayText.length;
+                    
+                    // Start with optimistic settings
+                    let fontSize = Math.min(14, maxSegmentWidth / (finalTextLength * 0.4));
+                    let letterSpacing = 0;
+                    
+                    // Iteratively check if text fits and adjust if needed
+                    let attempts = 0;
+                    while (attempts < 5) { // Max 5 adjustment attempts
+                        // Estimate actual text width (approximation)
+                        const estimatedCharWidth = fontSize * 0.6;
+                        const spacingContribution = Math.max(0, letterSpacing) * (finalTextLength - 1);
+                        const estimatedTextWidth = (finalTextLength * estimatedCharWidth) + spacingContribution + Math.abs(Math.min(0, letterSpacing)) * (finalTextLength - 1);
+                        
+                        // Check if it fits with some safety margin
+                        if (estimatedTextWidth <= maxSegmentWidth * 0.95) {
+                            break; // Text fits!
+                        }
+                        
+                        // Text doesn't fit, make adjustments
+                        if (attempts < 2) {
+                            // First try reducing letter spacing
+                            letterSpacing = Math.max(-1.5, letterSpacing - 0.5);
+                        } else {
+                            // Then reduce font size
+                            fontSize = Math.max(5, fontSize * 0.9);
+                        }
+                        
+                        attempts++;
+                    }
+                    
+                    text.setAttribute('font-size', fontSize);
+                    if (letterSpacing !== 0) {
+                        text.setAttribute('letter-spacing', `${letterSpacing}px`);
+                    }
+                    text.setAttribute('transform', `rotate(${(textAngle * 180 / Math.PI) + 90} ${textX} ${textY})`);
+                    text.textContent = displayText;
+                }
+                
+                wheelGroup.appendChild(text);
+                
+                // Move to next angle for next segment
+                currentAngle += segmentAngle;
+            }
+
+            // Update wheel rotation
+            wheelGroup.setAttribute('transform', `rotate(${currentRotation * 180 / Math.PI} 200 200)`);
+        }
+
+        function getWinnerIndex(finalRotation) {
+            if (weightedSegments.length === 0) return -1;
+            
+            // Normalize rotation to 0-2π
+            const normalizedRotation = ((finalRotation % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+            
+            // The pointer is at the top (-π/2). Since segments start at angle 0 (right) and go clockwise,
+            // we need to find where the top pointer intersects the segments after wheel rotation.
+            // Key insight: When wheel rotates clockwise by normalizedRotation, 
+            // the pointer effectively moves counter-clockwise relative to segments.
+            const pointerRelativeAngle = ((3 * Math.PI / 2) - normalizedRotation + (2 * Math.PI)) % (2 * Math.PI);
+            
+            console.log(`🔍 Debug Winner Detection:
+                Final Rotation: ${(finalRotation * 180 / Math.PI).toFixed(1)}°
+                Normalized: ${(normalizedRotation * 180 / Math.PI).toFixed(1)}°
+                Pointer Angle: ${(pointerRelativeAngle * 180 / Math.PI).toFixed(1)}°`);
+            
+            console.log(`📊 Weighted Segments Array:`, weightedSegments);
+            
+            // Find which weighted segment the pointer is pointing to
+            let cumulativeAngle = 0;
+            for (let i = 0; i < weightedSegments.length; i++) {
+                const segmentAngle = (weightedSegments[i].percentage / 100) * (2 * Math.PI);
+                const segmentStart = cumulativeAngle;
+                const segmentEnd = cumulativeAngle + segmentAngle;
+                
+                console.log(`  Segment ${i}: "${weightedSegments[i].name}" 
+                    Start: ${(segmentStart * 180 / Math.PI).toFixed(1)}°
+                    End: ${(segmentEnd * 180 / Math.PI).toFixed(1)}°
+                    Size: ${(segmentAngle * 180 / Math.PI).toFixed(1)}°
+                    Percentage: ${weightedSegments[i].percentage.toFixed(1)}%`);
+                
+                if (pointerRelativeAngle >= segmentStart && pointerRelativeAngle < segmentEnd) {
+                    console.log(`✅ Winner found: Segment ${i} - "${weightedSegments[i].name}"`);
+                    return i;
+                }
+                cumulativeAngle += segmentAngle;
+            }
+            
+            // Handle edge case where pointer is exactly at 2π (should be segment 0)
+            if (Math.abs(pointerRelativeAngle - 2 * Math.PI) < 0.001) {
+                console.log(`✅ Edge case: Pointer at 2π, returning segment 0`);
+                return 0;
+            }
+            
+            // Fallback to last segment if somehow we didn't find a match
+            console.log(`⚠️ Fallback: Using last segment ${weightedSegments.length - 1}`);
+            return weightedSegments.length - 1;
+        }
+
+        function spinWheel() {
+            console.log(`🎯 Spin triggered - isSpinning: ${isSpinning}, segments: ${weightedSegments.length}`);
+            
+            if (isSpinning || weightedSegments.length === 0) {
+                console.log(`❌ Spin blocked - isSpinning: ${isSpinning}, segments: ${weightedSegments.length}`);
+                return;
+            }
+
+            isSpinning = true;
+            winnerDisplay.style.display = 'none';
+            currentWinner = null;
+            
+            // Cancel any previous animation
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+
+            const duration = parseFloat(durationSlider.value) * 1000;
+            const minRotations = 5;
+            const maxRotations = 10;
+            const totalRotations = minRotations + Math.random() * (maxRotations - minRotations);
+            const totalRotation = totalRotations * 2 * Math.PI;
+
+            const startTime = Date.now();
+            const startRotation = currentRotation;
+            
+            console.log(`🔄 Starting spin: ${totalRotations.toFixed(1)} rotations over ${duration}ms`);
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function for smooth deceleration
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                
+                currentRotation = startRotation + totalRotation * easeOut;
+                
+                // Update SVG rotation
+                wheelGroup.setAttribute('transform', `rotate(${currentRotation * 180 / Math.PI} 200 200)`);
+
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    // Always reset spinning state when animation completes
+                    animationId = null;
+                    isSpinning = false;
+                    console.log(`✅ Spin completed - isSpinning reset to: ${isSpinning}`);
+                    
+                    const winnerIndex = getWinnerIndex(currentRotation);
+                    if (winnerIndex >= 0 && winnerIndex < weightedSegments.length) {
+                        showWinner(weightedSegments[winnerIndex].name);
+                    }
+                }
+            }
+
+            animate();
+        }
+        
+        // Force reset spinning state (for debugging)
+        function resetSpinState() {
+            isSpinning = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            console.log(`🔧 Spin state manually reset`);
+        }
+
+        function showWinner(winner) {
+            currentWinner = winner;
+            document.getElementById('winnerText').textContent = `🎉 Gewinner: ${winner}`;
+            
+            // Check if this is an empty segment and hide/show delete button accordingly
+            const winnerSegment = weightedSegments.find(segment => segment.name === winner);
+            const deleteBtn = document.getElementById('deleteWinnerBtn');
+            
+            if (winnerSegment && winnerSegment.isEmpty) {
+                // Hide delete button for empty segments
+                deleteBtn.style.display = 'none';
+            } else {
+                // Show delete button for regular items
+                deleteBtn.style.display = 'flex';
+            }
+            
+            winnerDisplay.style.display = 'flex';
+
+            // Add to history with percentage if it was a weighted item
+            const timestamp = new Date().toLocaleTimeString('de-DE');
+            let historyEntry = `${timestamp} - ${winner}`;
+            
+            if (winnerSegment && (winnerSegment.isWeighted || winnerSegment.isEmpty)) {
+                historyEntry += ` (${winnerSegment.percentage.toFixed(1)}%)`;
+            }
+            
+            history.unshift(historyEntry);
+            
+            updateHistoryDisplay();
+        }
+
+        function deleteWinner() {
+            if (!currentWinner) return;
+            
+            const winnerToDelete = currentWinner;
+            
+            // Remove the winner from the items list in textarea
+            const lines = itemsInput.value.trim().split('\n').filter(line => line.trim() !== '');
+            const updatedLines = lines.filter(line => {
+                const trimmedLine = line.trim();
+                
+                // Check if this line contains a weighted item (format: "item name 25%", "item name 0,25%", "item name .5%", etc.)
+                const percentMatch = trimmedLine.match(/(.+?)\s*(\d+(?:[.,]\d+)?|[.,]\d+)%\s*$/);
+                if (percentMatch) {
+                    // Extract the item name from weighted format
+                    const itemName = percentMatch[1].trim();
+                    return itemName !== winnerToDelete.trim();
+                } else {
+                    // Regular unweighted item
+                    return trimmedLine !== winnerToDelete.trim();
+                }
+            });
+            
+            // Update the textarea and reparse items
+            itemsInput.value = updatedLines.join('\n');
+            updateItems();
+            
+            // Hide the winner display immediately
+            winnerDisplay.style.display = 'none';
+            currentWinner = null;
+            
+            // Add deletion note to history
+            const timestamp = new Date().toLocaleTimeString('de-DE');
+            const historyEntry = `${timestamp} - [GELÖSCHT] ${winnerToDelete}`;
+            history.unshift(historyEntry);
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            historyList.innerHTML = '';
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-item">Bereit zum Drehen...</div>';
+                userScrolledHistory = false;
+            } else {
+                // Show all history entries (newest first since history.unshift puts them at start)
+                history.forEach(entry => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.textContent = entry;
+                    historyList.appendChild(div);
+                });
+                
+                // Keep scroll at top to show newest entries unless user scrolled down
+                if (!userScrolledHistory) {
+                    historyList.scrollTop = 0;
+                }
+            }
+        }
+
+        function clearHistory() {
+            history = [];
+            userScrolledHistory = false;
+            updateHistoryDisplay();
+        }
+
+        function shuffleItems() {
+            const lines = itemsInput.value.trim().split('\n').filter(line => line.trim() !== '');
+            for (let i = lines.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [lines[i], lines[j]] = [lines[j], lines[i]];
+            }
+            itemsInput.value = lines.join('\n');
+            updateItems();
+        }
+
+        function toggleSort() {
+            const lines = itemsInput.value.trim().split('\n').filter(line => line.trim() !== '');
+            const sortButton = document.getElementById('sortButton');
+            
+            if (sortAscending) {
+                lines.sort((a, b) => a.localeCompare(b, 'de'));
+                sortButton.textContent = '⬇️ Z-A';
+                sortButton.title = 'Absteigend sortieren';
+            } else {
+                lines.sort((a, b) => b.localeCompare(a, 'de'));
+                sortButton.textContent = '⬆️ A-Z';
+                sortButton.title = 'Aufsteigend sortieren';
+            }
+            
+            sortAscending = !sortAscending;
+            itemsInput.value = lines.join('\n');
+            updateItems();
+        }
+
+        function randomizeDuration() {
+            const randomValue = (Math.random() * 9.5 + 0.5).toFixed(1); // Random between 0.5 and 10.0
+            durationSlider.value = randomValue;
+            currentDurationSpan.textContent = randomValue + 's';
+        }
+
+        function saveToFile() {
+            const content = itemsInput.value;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'gluecksrad_eintraege.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                itemsInput.value = e.target.result;
+                updateItems();
+            };
+            reader.readAsText(file);
+        }
+
+        // Event listeners
+        itemsInput.addEventListener('input', updateItems);
+
+        durationSlider.addEventListener('input', function() {
+            currentDurationSpan.textContent = parseFloat(this.value).toFixed(1) + 's';
+        });
+
+        document.getElementById('wheelContainer').addEventListener('click', spinWheel);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.target === itemsInput) return; // Don't interfere with text input
+            
+            if (e.code === 'Space') {
+                e.preventDefault();
+                spinWheel();
+            } else if (e.code === 'Escape') {
+                e.preventDefault();
+                resetSpinState();
+            } else if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveToFile();
+            } else if (e.ctrlKey && e.key === 'o') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
+
+        // File operations
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                loadFromFile(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = Array.from(e.dataTransfer.files);
+            const txtFile = files.find(file => file.name.toLowerCase().endsWith('.txt'));
+            
+            if (txtFile) {
+                loadFromFile(txtFile);
+            }
+        });
+
+        // Detect user scroll in history
+        historyList.addEventListener('scroll', function() {
+            // Check if user scrolled away from top
+            const isAtTop = historyList.scrollTop <= 5;
+            userScrolledHistory = !isAtTop;
+        });
+
+        // Title functionality
+        const pageTitle = document.getElementById('pageTitle');
+        let isEditingTitle = false;
+        
+        function updateTitle() {
+            const newTitle = pageTitle.textContent.trim() || '⚖️ Glücksrad - Gewichtet';
+            // Remove emojis from tab title while keeping them in the visible h1
+            const tabTitle = newTitle.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim() || 'Glücksrad - Gewichtet';
+            document.title = tabTitle;
+        }
+        
+        pageTitle.addEventListener('input', updateTitle);
+        pageTitle.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+            // Remove line breaks and extra whitespace
+            const cleanText = text.replace(/\s+/g, ' ').trim();
+            document.execCommand('insertText', false, cleanText);
+        });
+        pageTitle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.blur();
+            }
+            e.stopPropagation();
+        });
+        pageTitle.addEventListener('blur', function() {
+            isEditingTitle = false;
+            updateTitle();
+            if (pageTitle.textContent.trim() === '') {
+                pageTitle.textContent = '⚖️ Glücksrad - Gewichtet';
+                updateTitle();
+            }
+        });
+        
+        pageTitle.addEventListener('focus', function() {
+            isEditingTitle = true;
+        });
+        
+        // Initialize
+        updateItems();
+        drawWheel();
+        updateTitle();
+    </script>
+</body>
+</html>
