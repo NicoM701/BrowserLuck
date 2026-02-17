@@ -11,17 +11,17 @@ Every mode is a single HTML file that runs instantly in any modern browser.
 
 ## Available Modes
 
-### German files
-
-- `gluecksrad.html` - Lucky wheel
-- `gluecksrad-weighted.html` - Weighted lucky wheel
-- `kopf-oder-zahl.html` - Coin flip
-
 ### English files
 
 - `lucky-wheel.html` - Lucky wheel
 - `lucky-wheel-weighted.html` - Weighted lucky wheel
 - `coin-flip.html` - Coin flip
+
+### German files
+
+- `gluecksrad.html` - Lucky wheel
+- `gluecksrad-weighted.html` - Weighted lucky wheel
+- `kopf-oder-zahl.html` - Coin flip
 
 ## Version Differences
 
@@ -37,20 +37,6 @@ Every mode is a single HTML file that runs instantly in any modern browser.
 
 ## Screenshots
 
-### German files
-
-`gluecksrad.html`
-
-![gluecksrad](screenshots/gluecksrad.png)
-
-`gluecksrad-weighted.html`
-
-![gluecksrad-weighted](screenshots/gluecksrad-weighted.png)
-
-`kopf-oder-zahl.html`
-
-![kopf-oder-zahl](screenshots/kopf_oder_zahl.png)
-
 ### English files
 
 `lucky-wheel.html`
@@ -64,6 +50,20 @@ Every mode is a single HTML file that runs instantly in any modern browser.
 `coin-flip.html`
 
 ![coin-flip](screenshots/coin-flip.png)
+
+### German files
+
+`gluecksrad.html`
+
+![gluecksrad](screenshots/gluecksrad.png)
+
+`gluecksrad-weighted.html`
+
+![gluecksrad-weighted](screenshots/gluecksrad-weighted.png)
+
+`kopf-oder-zahl.html`
+
+![kopf-oder-zahl](screenshots/kopf_oder_zahl.png)
 
 ## Features
 
