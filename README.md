@@ -23,6 +23,18 @@ Every mode is a single HTML file that runs instantly in any modern browser.
 - `lucky-wheel-weighted.html` - Weighted lucky wheel
 - `coin-flip.html` - Coin flip
 
+## Version Differences
+
+- Normal Lucky Wheel (`gluecksrad.html` / `lucky-wheel.html`):
+  Standard random selection. Every entry has the same chance.
+
+- Weighted Lucky Wheel (`gluecksrad-weighted.html` / `lucky-wheel-weighted.html`):
+  You can define percentages per entry (for example `Item 25%`).
+  If the total is below 100%, the remaining probability becomes an explicit empty segment (`[Leer]` / `[Empty]`).
+
+- Coin Flip (`kopf-oder-zahl.html` / `coin-flip.html`):
+  Two-sided 50/50 decision tool with customizable labels.
+
 ## Screenshots
 
 ### German files
